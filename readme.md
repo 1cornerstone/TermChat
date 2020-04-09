@@ -14,6 +14,11 @@
 **Example**      
 
 ![picture](screenshot/Screen Shot 2020-04-09 at 4.25.57 PM.png)  
+
+
+to test : 
+ - run server file seperately, so it listen to incomming connection and also run the client file to join the connection 
+ 
     
     
     
