@@ -6,22 +6,27 @@ import IChat from './IChat'
 
 const clientSocket = require('socket.io-client');
 const chalk = require('chalk');
-const _username: string = "akindev";
+const _username: string = generateUserID();
 let _topic: string = "";
 let topics: string[] = [];
 
+
+console.log(` your Username ${_username}`);
 
 const client = clientSocket.connect(('http://localhost:2453'));
 
 client.on('connect', () => {
     console.log(chalk.blue('connected to server'));
+    client.emit('getTopics');
 
     client.on('topics', (data: any) => {
         topics = data;
     });
 
     client.on('msgReceived', (message: any) => {
-
+            if (message.topic == _topic){
+                console.log( `${message.username}:${message.chatMessage}`);
+            }
     });
 
 });
@@ -32,11 +37,7 @@ process.stdin.on('data', (chunk) => {
     let cmd: string[] = value.trim().split(' ');
 
     if (value == 'lst') {
-      client.emit('getTopics');
-      setTimeout(()=>{
         return console.table(topics);
-      },500);
-
     }
 
     else if (value == 'help'){ return console.log(chalk.cyan(help));}
@@ -68,6 +69,8 @@ process.stdin.on('data', (chunk) => {
         } else {
             console.log(chalk.redBright("\tJoin topic before you can send message"))
         }
+    }else{
+        console.log(' Message not sent,  Use -- to start message or type help')
     }
 
 });
@@ -76,13 +79,18 @@ process.stdin.on('data', (chunk) => {
 const help: string = " TermChat command \n" +
     "lst     list all topics\n" +
     "help     log command\n" +
-    "optout   leave Topic\n" +
-    "optin -t   join group  ";
+    "opt-out   leave Topic\n" +
+    "opt-in t   join group , t = topic\n" +
+    "--   to send message start with -- and whitespace after --";
 
 
 function getTopics(arg:string):boolean {
   client.emit('getTopics');
   return (!topics.includes(arg)) ;
 }
+
+ function generateUserID():string{
+    return  'user'+ require('generate-pin').generatePin()
+ }
 
 

@@ -14,12 +14,13 @@ const topics:string[] =["nodejs","python","java","golang"];
 
 socket.on('connection',async (http:any)=>{
     console.log('incoming connection');
+
    http.on('getTopics',()=>{
        http.emit('topics',topics);
    });
 
     http.on('message',(msg: any)=>{
-       http.emit('msgReceived',msg);
+       http.broadcast.emit('msgReceived',msg);
     })
 
 
